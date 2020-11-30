@@ -4,7 +4,7 @@ using .AImages, REPL
 
 mutable struct app
     name :: String
-    path :: String 
+    path :: String
     icon :: String
 end
     
@@ -14,20 +14,21 @@ files = readdir(appsPath)
 apps = []
 
 regexName = r"Name=(.*)"
-regexPath = r"Exec=(.*)"
 regexIcon = r"Icon=(.*)"
 regexDE = r"[Desktop Entry]"
 regexND = r"NoDisplay=true"
 
-function getApp(desktop :: String)
+function getApp(filename :: String)
+
+    desktop = open(f->read(f, String), appsPath * "/" * filename, "r")
+
     nm = match(regexName, desktop)
     ico = match(regexIcon, desktop)
-    ph = match(regexPath, desktop)
     nd = match(regexND, desktop)
     de = match(regexDE, desktop)
 
-    if nm !== nothing && ico !== nothing && ph !== nothing && nd === nothing && de !== nothing
-	return app(nm.captures[1], ph.captures[1], ico.captures[1])
+    if nm !== nothing && ico !== nothing && nd === nothing && de !== nothing
+	return app(nm.captures[1], filename, ico.captures[1])
     end
 end
 
@@ -78,34 +79,40 @@ function getKey()
 end
 
 # Process apps
-apps = map(o->open(f->read(f, String), appsPath * "/" * o, "r"), files)
-apps = map(getApp, apps)
+apps = map(getApp, files)
 apps = filter(a->a!==nothing, apps)
 apps = map(findImage, apps)
 
-const nApps = length(apps)
-const screenSz = displaysize(stdout)
-lOffset = round(Int, screenSz[2]/2)-round(Int, AImages.imgSize/2)
+# apps = filter(a->a.icon!="", apps)
 
+const nApps = length(apps)
 index = 1
+screenSz = displaysize(stdout)
+lOffset = round(Int, screenSz[2]/2)-round(Int, AImages.imgWidth/2)
 
 while true
     global index
+    global screenSz
+    global lOffset
+
     displayApp(apps[index])
-    #println(apps[5].icon)
     k = getKey()
     
     if k == 'x' || k == 'q'
+	run(`/usr/bin/clear`, wait=true)
 	break
     elseif k == '\u03E9'
 	# derecha
-	index = index + 1 <= length(apps) ? index + 1 : 0;
+	index = index + 1 <= length(apps) ? index + 1 : 1;
     elseif k == '\u03E8'
 	# izquierda
-	index = index - 1 >= 0 ? index - 1 : length(apps);
-    else
-	# nothing
+	index = index - 1 >= 1 ? index - 1 : length(apps);
+    elseif Int(k) == 13
+	run(`gtk-launch $(apps[index].path)`, wait=true)
     end
+
+    screenSz = displaysize(stdout)
+    lOffset = round(Int, screenSz[2]/2)-round(Int, AImages.imgWidth/2)
+
+
 end
-#printAsciiImg(asciiImage(apps[3].icon))
-#println(apps[3].name)

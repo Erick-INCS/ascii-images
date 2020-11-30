@@ -6,6 +6,7 @@ export asciiImage, printAsciiImg
 
 imagePath = "abiword.png"
 imgSize = 20
+imgWidth = 40
 chars = [' ', '·', '+', '/','#', '▓']
 
 function set0s(px)
@@ -39,7 +40,7 @@ end
 function asciiImage(path::String)
 
     img = RGBA.(load(path))
-    img = imresize(img, imgSize, imgSize)
+    img = imresize(img, imgSize, imgWidth)
     img = map(set0s, img)
     img = Gray.(img)
     img = channelview(img)
