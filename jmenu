@@ -1,0 +1,3 @@
+#!/usr/bin/bash
+#julia -J/HDD/Code/Julia/ascii_img/ascii_img.so /HDD/Code/Julia/ascii_img/menu.jl
+rxvt -e "/HDD/Code/Julia/ascii_img/menu.jl"

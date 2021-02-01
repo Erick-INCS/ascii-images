@@ -1,8 +1,4 @@
-#!/usr/bin/env julia
-
-#println(join(split(abspath(PROGRAM_FILE), "/")[1:end-1], "/") * "/AImages.jl")
-include(join(split(abspath(PROGRAM_FILE), "/")[1:end-1], "/") * "/AImages.jl")
-#include("AImages.jl")
+include("AImages.jl")
 
 using .AImages, REPL
 
@@ -94,29 +90,6 @@ index = 1
 screenSz = displaysize(stdout)
 lOffset = round(Int, screenSz[2]/2)-round(Int, AImages.imgWidth/2)
 
-while true
-    global index
-    global screenSz
-    global lOffset
-
-    displayApp(apps[index])
-    k = getKey()
-    
-    if k == 'x' || k == 'q'
-	run(`/usr/bin/clear`, wait=true)
-	break
-    elseif k == '\u03E9'
-	# derecha
-	index = index + 1 <= length(apps) ? index + 1 : 1;
-    elseif k == '\u03E8'
-	# izquierda
-	index = index - 1 >= 1 ? index - 1 : length(apps);
-    elseif Int(k) == 13
-	run(`gtk-launch $(apps[index].path)`, wait=true)
-    end
-
-    screenSz = displaysize(stdout)
-    lOffset = round(Int, screenSz[2]/2)-round(Int, AImages.imgWidth/2)
-
-
+for i=1:length(apps)
+    displayApp(apps[i])
 end
