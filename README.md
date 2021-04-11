@@ -34,5 +34,5 @@ create_sysimage([:Images, :ImageIO, :ImageMagick, :FileIO], sysimage_path="image
 ./menu.jl
 # for windows: julia menu.jl
 # with sysimage
-./menu.jl -Jimage.so
+julia -Jimage.so menu.jl
 ```
